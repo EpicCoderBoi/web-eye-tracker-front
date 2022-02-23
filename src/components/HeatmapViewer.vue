@@ -18,7 +18,7 @@
         <div style="width:200vh">
           <v-row justify="center" class="mt-5">
             <v-btn
-            class="mt-4"
+              class="mt-4"
               @click="createHeatmap()"
               v-if="!isplay"
               color="green"
@@ -40,13 +40,36 @@
 const h337 = require("heatmap.js");
 
 export default {
-  props: ["gaze_points", "screen_record"],
+  props: {
+    gaze_points: {
+      type: Array,
+      default: () => [],
+    },
+    screen_record: Blob,
+  },
   data() {
     return {
       isplay: false,
+      points: [],
+      max: 1,
+      heatmap: null,
     };
   },
   methods: {
+    addToHeatmap(point) {
+      // heatmap data format
+      this.points.push({
+        x: Math.floor(Math.abs(point.x)),
+        y: Math.floor(Math.abs(point.y)),
+        value: 1,
+      });
+
+      var data = {
+        max: this.max,
+        data: this.points,
+      };
+      this.heatmap.setData(data);
+    },
     async createHeatmap() {
       this.isplay = true;
       document.getElementById("video").src = URL.createObjectURL(
@@ -64,27 +87,23 @@ export default {
       }
 
       const container = document.getElementById("heatmap");
-      var heatmap = h337.create({
+      this.heatmap = h337.create({
         container: container,
       });
 
-      var points = [];
-      var max = 1;
-      // heatmap data format
-      this.gaze_points.forEach((element) => {
-        points.push({
-          x: Math.floor(Math.abs(element.x)),
-          y: Math.floor(Math.abs(element.y)),
-          value: 1,
-        });
-      });
-
-      var data = {
-        max: max,
-        data: points,
+      const video = document.getElementById("video");
+      video.ontimeupdate = () => {
+        if (this.gaze_points) {
+          const videoTime = video.currentTime
+          const findClosest = this.gaze_points.reduce((a, b) => {
+            return Math.abs(b.moment_in_time - videoTime) <
+              Math.abs(a.moment_in_time - videoTime)
+              ? b
+              : a;
+          });
+          this.addToHeatmap(findClosest);
+        }
       };
-      console.log(data);
-      heatmap.setData(data);
     },
   },
 };

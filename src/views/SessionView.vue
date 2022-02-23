@@ -107,7 +107,10 @@ export default {
   methods: {
     async createHeatmap() {
       const { data } = await api.getSessionResults(this.session.id);
-      this.points = data;
+      if(typeof(this.points) === 'string')
+        this.points = new Function("return " + data + ";")();
+      else
+        this.points = data
 
       this.screen_record = (
         await api.getSessionScreenRecord(this.session.id)

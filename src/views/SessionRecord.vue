@@ -101,6 +101,7 @@ export default {
       irisPoints: [],
       predictions: [],
       isStop: false,
+      momentTime: 0,
     };
   },
   watch: {
@@ -133,12 +134,13 @@ export default {
         );
 
         this.currentSession.iris_points = this.irisPoints;
+        console.log('current session => ', this.currentSession);
         await api.createSession(this.currentSession, this.webcamfile, this.screenfile);
 
         this.$router.push('/dashboard')
       } else {
         alert("Session discarded!");
-        this.$router.push('/dashboard')
+        this.$router.push("/dashboard");
       }
     },
     async startRecord() {
@@ -311,12 +313,15 @@ export default {
         });
     },
     async detectFace() {
+      const video = document.getElementById("video-tag");
       this.predictions = await this.model.estimateFaces({
-        input: document.getElementById("video-tag"),
+        input: video,
       });
+
       if (!this.isStop) {
         if (this.predictions[0]) {
           this.irisPoints.push({
+            moment_in_time: video.currentTime,
             left_iris_x: this.predictions[0].scaledMesh[468]["0"],
             left_iris_y: this.predictions[0].scaledMesh[468]["1"],
             right_iris_x: this.predictions[0].scaledMesh[473]["0"],
