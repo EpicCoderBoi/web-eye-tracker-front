@@ -94,7 +94,7 @@ export default {
       const video = document.getElementById("video");
       video.ontimeupdate = () => {
         if (this.gaze_points) {
-          const videoTime = video.currentTime
+          const videoTime = video.currentTime;
           const findClosest = this.gaze_points.reduce((a, b) => {
             return Math.abs(b.moment_in_time - videoTime) <
               Math.abs(a.moment_in_time - videoTime)
@@ -104,6 +104,23 @@ export default {
           this.addToHeatmap(findClosest);
         }
       };
+
+      // var points = [];
+      // var max = 1;
+      // // heatmap data format
+      // this.gaze_points.forEach((element) => {
+      //   points.push({
+      //     x: Math.floor(Math.abs(element.x)),
+      //     y: Math.floor(Math.abs(element.y)),
+      //     value: 1,
+      //   });
+      // });
+      // var data = {
+      //   max: max,
+      //   data: points,
+      // };
+      // console.log(data);
+      // this.heatmap.setData(data);
     },
   },
 };
