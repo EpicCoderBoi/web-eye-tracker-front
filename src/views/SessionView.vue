@@ -156,7 +156,6 @@ export default {
       this.showHeatmap = true;
     },
     async createHeatmap(item) {
-      console.log(item);
       this.points = item.results;
 
       this.screen_record = (
@@ -166,7 +165,6 @@ export default {
       this.showHeatmap = true;
     },
     async downloadSession(item) {
-      console.log(item);
       var dataStr =
         "data:text/json;charset=utf-8," +
         encodeURIComponent(JSON.stringify(item));

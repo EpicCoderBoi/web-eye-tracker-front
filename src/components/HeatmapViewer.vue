@@ -57,6 +57,9 @@ export default {
   },
   methods: {
     addToHeatmap(point) {
+      // uncoment if wanted to clear points before setting them
+      // this.points = []
+      
       // heatmap data format
       this.points.push({
         x: Math.floor(Math.abs(point.x)),
@@ -68,6 +71,7 @@ export default {
         max: this.max,
         data: this.points,
       };
+
       this.heatmap.setData(data);
     },
     async createHeatmap() {
@@ -92,18 +96,44 @@ export default {
       });
 
       const video = document.getElementById("video");
-      video.ontimeupdate = () => {
-        if (this.gaze_points) {
-          const videoTime = video.currentTime;
-          const findClosest = this.gaze_points.reduce((a, b) => {
-            return Math.abs(b.moment_in_time - videoTime) <
-              Math.abs(a.moment_in_time - videoTime)
-              ? b
-              : a;
-          });
-          this.addToHeatmap(findClosest);
+      var reqId;
+      var th = this;
+      var startTracking = function() {
+        reqId = requestAnimationFrame(function play() {
+          if (th.gaze_points.length > 0) {
+            if (th.gaze_points[0].moment_in_time <= video.currentTime) {
+              th.addToHeatmap(th.gaze_points[0]);
+              th.gaze_points.shift();
+            }
+          }
+
+          reqId = requestAnimationFrame(play);
+        });
+      };
+
+      var stopTracking = function() {
+        if (reqId) {
+          cancelAnimationFrame(reqId);
         }
       };
+
+      video.addEventListener("play", startTracking);
+
+      video.addEventListener("pause", stopTracking);
+
+      // video.ontimeupdate = () => {
+      //   if (this.gaze_points) {
+      //     const videoTime = video.currentTime;
+      //     console.log(videoTime)
+      //     const findClosest = this.gaze_points.reduce((a, b) => {
+      //       return Math.abs(b.moment_in_time - videoTime) <
+      //         Math.abs(a.moment_in_time - videoTime)
+      //         ? b
+      //         : a;
+      //     });
+      //     this.addToHeatmap(findClosest);
+      //   }
+      // };
 
       // var points = [];
       // var max = 1;
