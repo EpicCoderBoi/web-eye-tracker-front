@@ -14,22 +14,21 @@
                 <p class="mx-4">{{ session.description }}</p>
               </v-col>
               <v-col cols="12" lg="4" md="4">
+                <v-btn width="100%" class="mt-6" outlined @click="newSession()">
+                  Train Again
+                  <v-icon right>mdi-redo</v-icon>
+                </v-btn>
                 <v-btn
                   width="100%"
                   class="my-6"
                   outlined
                   @click="downloadJSON()"
                 >
-                  Download JSON
-                  <v-icon right>mdi-code-json</v-icon>
-                </v-btn>
-                <v-btn width="100%" outlined @click="createHeatmap()">
-                  View heatmap
-                  <v-icon right>mdi-fire</v-icon>
+                  Full session
+                  <v-icon right>mdi-download</v-icon>
                 </v-btn>
                 <v-btn
                   width="100%"
-                  class="mt-6"
                   outlined
                   color="red"
                   @click="deleteSession()"
@@ -39,6 +38,25 @@
                 </v-btn>
               </v-col>
             </v-row>
+
+            <v-row spa> </v-row>
+            <v-data-table :headers="headers" :items="results">
+              <template v-slot:item.actions="{ item }">
+                <v-btn color="blue" outlined @click="downloadSession(item)">
+                  JSON
+                  <v-icon right>mdi-code-json</v-icon>
+                </v-btn>
+                <v-btn
+                  color="orange"
+                  outlined
+                  class="ml-1"
+                  @click="createHeatmap(item)"
+                >
+                  Heatmap
+                  <v-icon right>mdi-fire</v-icon>
+                </v-btn>
+              </template>
+            </v-data-table>
           </v-card>
         </v-col>
       </v-row>
@@ -74,7 +92,7 @@
 
     <v-dialog fullscreen v-model="showHeatmap">
       <Heatmap
-        @close="showHeatmap = false"
+        @close="reload()"
         :gaze_points="points"
         :screen_record="screen_record"
       />
@@ -97,26 +115,67 @@ export default {
       showHeatmap: false,
       points: [],
       screen_record: null,
+      headers: [
+        { text: "Date", value: "date" },
+        { text: "Actions", value: "actions", align: "end", sortable: false },
+      ],
     };
   },
   computed: {
     session() {
       return this.$store.state.session.currentSession;
     },
+    results() {
+      let res = [];
+      this.session.session_results.forEach((element) => {
+        let key = Object.keys(element);
+        let value = Object.values(element);
+        let obj = {
+          date: new Date(parseInt(key[0]) * 1000).toString().substring(0, 24),
+          results: value[0],
+        };
+        res.push(obj);
+      });
+      return res;
+    },
   },
   methods: {
-    async createHeatmap() {
-      const { data } = await api.getSessionResults(this.session.id);
-      if(typeof(this.points) === 'string')
+    reload() {
+      location.reload();
+    },
+    async newSession() {
+      const { data } = await api.getSessionResults(this.session.id, true);
+      if (typeof this.points === "string")
         this.points = new Function("return " + data + ";")();
-      else
-        this.points = data
+      else this.points = data;
 
       this.screen_record = (
         await api.getSessionScreenRecord(this.session.id)
       ).data;
 
       this.showHeatmap = true;
+    },
+    async createHeatmap(item) {
+      console.log(item);
+      this.points = item.results;
+
+      this.screen_record = (
+        await api.getSessionScreenRecord(this.session.id)
+      ).data;
+
+      this.showHeatmap = true;
+    },
+    async downloadSession(item) {
+      console.log(item);
+      var dataStr =
+        "data:text/json;charset=utf-8," +
+        encodeURIComponent(JSON.stringify(item));
+      var downloadAnchorNode = document.createElement("a");
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", this.session.title + item.date + ".json");
+      document.body.appendChild(downloadAnchorNode); // required for firefox
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
     },
     async downloadJSON() {
       const { data } = await api.getSessionResults(this.session.id);

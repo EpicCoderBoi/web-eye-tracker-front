@@ -30,8 +30,8 @@ export default {
     deleteSession: (id) => {
         return axios.delete(`/api/session?id=${id}`)
     },
-    getSessionResults: (id) => {
-        return axios.get(`/api/session/results?id=${id}`)
+    getSessionResults: (id, is_new_session) => {
+        return axios.get(`/api/session/results?id=${id}&is_new_session=${is_new_session}`)
     },
     getSessionScreenRecord: (id) => {
         return axios.get(`/api/session/results/record?id=${id}`, {
