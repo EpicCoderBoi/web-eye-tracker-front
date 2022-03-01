@@ -120,21 +120,8 @@ export default {
       video.addEventListener("play", startTracking);
 
       video.addEventListener("pause", stopTracking);
-
-      // video.ontimeupdate = () => {
-      //   if (this.gaze_points) {
-      //     const videoTime = video.currentTime;
-      //     console.log(videoTime)
-      //     const findClosest = this.gaze_points.reduce((a, b) => {
-      //       return Math.abs(b.moment_in_time - videoTime) <
-      //         Math.abs(a.moment_in_time - videoTime)
-      //         ? b
-      //         : a;
-      //     });
-      //     this.addToHeatmap(findClosest);
-      //   }
-      // };
-
+      
+      // uncomment for full heatmap without progressive construction
       // var points = [];
       // var max = 1;
       // // heatmap data format
