@@ -11,11 +11,12 @@ export default {
         this.resizeCanvas()
         this.draw(this.fixedTrainData.calibX, this.fixedTrainData.calibY, 'black')
         await this.trainModel()
+        console.log(this.model)
         await this.predictCalibrationValues()
-        // this.draw(this.fixedTrainData.rightX, this.fixedTrainData.rightY, 'blue')
-        // this.draw(this.fixedTrainData.leftX, this.fixedTrainData.leftY, 'red')
-        // this.draw(this.predictTrainData.rightX, this.predictTrainData.rightY, 'green')
-        // this.draw(this.predictTrainData.leftX, this.predictTrainData.leftY, 'orange')
+        this.draw(this.fixedTrainData.rightX, this.fixedTrainData.rightY, 'blue')
+        this.draw(this.fixedTrainData.leftX, this.fixedTrainData.leftY, 'red')
+        this.draw(this.predictTrainData.rightX, this.predictTrainData.rightY, 'blue')
+        this.draw(this.predictTrainData.leftX, this.predictTrainData.leftY, 'red')
     },
     computed: {
         fixedTrainData() {
@@ -25,7 +26,7 @@ export default {
             return this.$store.state.predict.predictTrainData;
         },
         model() {
-            return this.$store.state.model
+            return this.$store.state.predict.model
         },
         predictionResults() {
             return this.makePredictions();
@@ -36,32 +37,32 @@ export default {
             await this.$store.dispatch('trainModel', tf)
         },
         predictCalibrationValues() {
-            // if (!this.model) {
-            //     console.error('Model not trained. Please train the model first.');
-            //     return;
-            // }
+            if (!this.model) {
+                console.error('Model not trained. Please train the model first.');
+                return;
+            }
 
-            // const rightX = tf.tensor2d(this.predictTrainData.rightX, [this.predictTrainData.rightX.length, 1]);
-            // const rightY = tf.tensor2d(this.predictTrainData.rightY, [this.predictTrainData.rightY.length, 1]);
-            // const leftX = tf.tensor2d(this.predictTrainData.leftX, [this.predictTrainData.leftX.length, 1]);
-            // const leftY = tf.tensor2d(this.predictTrainData.leftY, [this.predictTrainData.leftY.length, 1]);
+            const rightX = tf.tensor2d(this.predictTrainData.rightX, [this.predictTrainData.rightX.length, 1]);
+            const rightY = tf.tensor2d(this.predictTrainData.rightY, [this.predictTrainData.rightY.length, 1]);
+            const leftX = tf.tensor2d(this.predictTrainData.leftX, [this.predictTrainData.leftX.length, 1]);
+            const leftY = tf.tensor2d(this.predictTrainData.leftY, [this.predictTrainData.leftY.length, 1]);
 
-            // const inputTensors = tf.concat([rightX, rightY, leftX, leftY], 1);
+            const inputTensors = tf.concat([rightX, rightY, leftX, leftY], 1);
 
-            // const predictions = this.model.predict(inputTensors).dataSync();
+            const predictions = this.model.predict(inputTensors).dataSync();
 
-            // const calibXPredictions = predictions.slice(0, this.predictTrainData.rightX.length);
-            // const calibYPredictions = predictions.slice(this.predictTrainData.rightX.length);
+            const calibXPredictions = predictions.slice(0, this.predictTrainData.rightX.length);
+            const calibYPredictions = predictions.slice(this.predictTrainData.rightX.length);
 
-            // rightX.dispose();
-            // rightY.dispose();
-            // leftX.dispose();
-            // leftY.dispose();
-            // inputTensors.dispose();
-            // console.log(calibXPredictions)
-            // console.log(calibYPredictions);
+            rightX.dispose();
+            rightY.dispose();
+            leftX.dispose();
+            leftY.dispose();
+            inputTensors.dispose();
+            console.log(calibXPredictions)
+            console.log(calibYPredictions);
 
-            // return { calibXPredictions, calibYPredictions };
+            return { calibXPredictions, calibYPredictions };
         },
 
         async makePredictions() {

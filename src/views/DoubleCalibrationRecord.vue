@@ -249,6 +249,7 @@ export default {
       const screenHeight = window.screen.height;
       const screenWidth = window.screen.width;
       await this.$store.dispatch('sendData', { circleIrisPoints: this.circleIrisPoints, calibPredictionPoints: this.calibPredictionPoints, screenHeight: screenHeight, screenWidth: screenWidth })
+      this.stopRecord()
       this.$store.dispatch('extractXYValues', { extract: this.circleIrisPoints, hasCalib: true })
       this.$store.dispatch('extractXYValues', { extract: this.calibPredictionPoints, hasCalib: false })
       this.$router.push('/postCalibration');
