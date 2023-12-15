@@ -67,6 +67,9 @@ export default {
         predictTrainData() {
             return this.$store.state.predict.predictTrainData;
         },
+        predictions() {
+            return this.$store.state.detect.predictions;
+        }
     },
     watch: {
         mockPattern() {
@@ -75,6 +78,9 @@ export default {
         threshold() {
             this.drawCalibPoints()
         },
+        predictions(newPredictions) {
+            this.drawPredictedPoints(newPredictions)
+        }
     },
     methods: {
         callConfigModal() {
@@ -82,6 +88,11 @@ export default {
         },
         select(pointNumber) {
             this.$store.commit('setMockPatternElement', this.pattern[pointNumber])
+        },
+        drawPredictedPoints(predictions) {
+            for (let pred in predictions) {
+                this.drawPoints(predictions[pred].pointX, predictions[pred].pointY, 3.0, 'red')
+            }
         },
         drawCalibPoints() {
             const pointSize = 3.5

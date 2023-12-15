@@ -12,7 +12,12 @@ export default {
             state.loaded = newLoaded
         },
         setPredictions(state, newPredictions) {
-            state.predictions = newPredictions
+            state.predictions.push(newPredictions)
         }
     },
+    actions: {
+        setPredictions(context, newPredictions) {
+            context.commit('setPredictions', newPredictions)
+        }
+    }
 }
