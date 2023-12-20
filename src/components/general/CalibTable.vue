@@ -32,8 +32,8 @@ export default {
         { text: 'name', value: 'calibName' },
         { text: 'id', value: 'id' },
         { text: 'point number', value: 'pointNumber' },
-        { text: 'average accuracy', value: 'averageAccuracy' },
-        { text: 'average precision', value: 'averagePrecision' },
+        { text: 'average accuracy (px)', value: 'averageAccuracy' },
+        { text: 'average precision (px)', value: 'averagePrecision' },
       ],
     };
   },
@@ -52,36 +52,9 @@ export default {
   async created() {
     if (this.calibrations.length == 0) {
       await this.getAllCalibrations()
-      await this.calibrations.forEach(element => {
-        console.log(element);
-        element.precision = this.getCalibAvgPrecision(element)
-        element.accuracy = this.getCalibAvgAccuracy(element)
-      }
-      )
     }
   },
   methods: {
-    getCalibAvgAccuracy(calibration) {
-      const pattern = calibration.pattern;
-      let totalAccuracy = 0;
-      pattern.forEach(element => {
-        totalAccuracy += Number(element.accuracy);
-      });
-
-      const avgAccuracy = totalAccuracy / pattern.length;
-      return avgAccuracy;
-    },
-    getCalibAvgPrecision(calibration) {
-      const pattern = calibration.pattern;
-      let totalPrecision = 0;
-
-      pattern.forEach(element => {
-        totalPrecision += Number(element.precision);
-      });
-
-      const avgPrecision = totalPrecision / pattern.length;
-      return avgPrecision;
-    },
     select(item) {
       this.$store.commit('setFromDashboard', true)
       this.$store.dispatch('selectCalib', item)

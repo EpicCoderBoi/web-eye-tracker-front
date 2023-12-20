@@ -154,8 +154,8 @@ export default {
                         averageAccuracy += Number(element.accuracy);
                         averagePrecision += Number(element.precision);
                     })
-                    data.averageAccuracy = averageAccuracy / data.pattern.length
-                    data.averagePrecision = averagePrecision / data.pattern.length
+                    data.averageAccuracy = (averageAccuracy / data.pattern.length).toFixed(2)
+                    data.averagePrecision = (averagePrecision / data.pattern.length).toFixed(2)
                     calibrations.push({
                         id: doc.id, ...data
                     });

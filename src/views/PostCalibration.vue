@@ -103,7 +103,7 @@ export default {
                 var sumY = 0;
                 var count = 0;
                 for (var a = 0; a < this.pattern[i].predictionX.length; a++) {
-                    // predicted points
+                    // itterate to get center and accuracy
                     const distance = this.euclidianDistance(this.pattern[i].x, this.pattern[i].predictionX[a], this.pattern[i].y, this.pattern[i].predictionY[a])
                     if (distance <= this.threshold) {
                         this.drawPoints(this.pattern[i].predictionX[a], this.pattern[i].predictionY[a], pointSize, pointsColor)
@@ -116,8 +116,21 @@ export default {
                 }
                 var centroidX = sumX / count;
                 var centroidY = sumY / count;
+                var precision = 0
+                var pCount = 0
+                for (var c = 0; c < this.pattern[i].predictionX.length; c++) {
+                    // itterate to get precision
+                    const distance = this.euclidianDistance(centroidX, this.pattern[i].predictionX[c], centroidY, this.pattern[i].predictionY[c])
+                    pCount++
+                    precision += distance
+                }
+                precision = precision / pCount
+                const accuracy = this.euclidianDistance(centroidX, this.pattern[i].x, centroidY, this.pattern[i].y)
+
                 this.drawDash(centroidX, centroidY, this.pattern[i].x, this.pattern[i].y, dashColor)
-                this.drawCentroid(centroidX, centroidY, 1 + this.pattern[i].precision * 25.4, centroidColor)
+                this.pattern[i].precision = precision.toFixed(2)
+                this.pattern[i].accuracy = accuracy.toFixed(2)
+                this.drawCentroid(centroidX, centroidY, precision, centroidColor)
             }
         },
         recalibrate() {
@@ -260,7 +273,9 @@ export default {
 
 <style>
 .scroll-container {
-  width: 100%; /* Set the width to whatever you need */
-  overflow-x: auto; /* Enable horizontal scrolling */
+    width: 100%;
+    /* Set the width to whatever you need */
+    overflow-x: auto;
+    /* Enable horizontal scrolling */
 }
 </style>
