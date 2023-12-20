@@ -34,6 +34,7 @@ export default {
         { text: 'point number', value: 'pointNumber' },
         { text: 'average accuracy (px)', value: 'averageAccuracy' },
         { text: 'average precision (px)', value: 'averagePrecision' },
+        { text: 'distance threshold', value: 'threshold' },
       ],
     };
   },
