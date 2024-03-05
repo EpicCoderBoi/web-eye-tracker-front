@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="scroll-container">
         <canvas id="canvas" />
         <div>
             <PointModal :x="Number(x)" :y="Number(y)" :precision="Number(precision)" :accuracy="Number(accuracy)"
@@ -60,6 +60,9 @@ export default {
         },
         threshold() {
             return this.$store.state.calibration.threshold;
+        },
+        fromDashboard() {
+            return this.$store.state.calibration.fromDashboard;
         },
         fixedTrainData() {
             return this.$store.state.predict.fixedTrainData;
@@ -159,6 +162,12 @@ export default {
             const canvas = document.getElementById('canvas');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight
+            if (this.fromDashboard) {
+                const dimension = this.getLargerDistancePoint()
+                const offset = 25
+                canvas.width = dimension.x + offset;
+                canvas.height = dimension.y + offset;
+            }
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height)
             ctx.fillStyle = this.backgroundColor;
@@ -181,6 +190,23 @@ export default {
                     }
                 }
             });
+        },
+        getLargerDistancePoint() {
+            var lX = 0
+            var lY = 0
+            for (var i = 0; i < this.pattern.length; i++) {
+                for (var a = 0; a < this.pattern[i].predictionX.length; a++) {
+                    const x = this.pattern[i].predictionX[a]
+                    const y = this.pattern[i].predictionY[a]
+                    if (x > lX) {
+                        lX = x
+                    }
+                    if (y > lY) {
+                        lY = y
+                    }
+                }
+            }
+            return { x: lX, y: lY }
         },
         drawCentroid(x, y, radius, color) {
             const canvas = document.getElementById('canvas');
@@ -241,3 +267,11 @@ export default {
     },
 };
 </script>
+
+
+<style>
+.scroll-container {
+  width: 100%; /* Set the width to whatever you need */
+  overflow-x: auto; /* Enable horizontal scrolling */
+}
+</style>

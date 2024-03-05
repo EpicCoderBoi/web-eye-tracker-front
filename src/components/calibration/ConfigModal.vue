@@ -6,12 +6,12 @@
                 {{ (mockPattern.length != 0) ? `using ${mockPattern.length} selected points` : `no points selected, using
                 all ${pattern.length} points` }}
             </v-card-text>
-            <Slider :value="threshold" :min="Number(0)" :max="Number(1000)" label="Points Distance Threshold"
+            <Slider :value="threshold" :min="Number(0)" :step="5" :max="Number(1000)" label="Points Distance Threshold"
                 @input="updateThreshold" />
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="recalibrate">recalib</v-btn>
-                <v-btn color="blue darken-1" text @click="save">save</v-btn>
+                <v-btn color="blue darken-1" :disabled="fromDashboard" text @click="recalibrate">recalib</v-btn>
+                <v-btn color="blue darken-1" :disabled="fromDashboard" text @click="save">save</v-btn>
                 <v-btn color="blue darken-1" text @click="aDialog = false">close</v-btn>
                 <!-- <v-btn color="blue darken-1" text @click="runInferenceX">run inference X</v-btn> -->
                 <v-btn color="blue darken-1" text @click="runInference">run inference Y</v-btn>
@@ -58,6 +58,9 @@ export default {
         },
         mockPattern() {
             return this.$store.state.calibration.mockPattern
+        },
+        fromDashboard() {
+            return this.$store.state.calibration.fromDashboard
         },
     },
     methods: {
